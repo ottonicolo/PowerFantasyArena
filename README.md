@@ -1,43 +1,70 @@
-# 万象局 / Power Fantasy Arena
+# Power Fantasy Arena
 
-这是一个本地运行的 AI 桌游。最多六名原创主角从 18 岁走到 28 岁，每个月各抽一次事件。角色用 DeepSeek V4 Flash 做决定，整局只有一名 DeepSeek V4 Pro 裁判。
+[English](README.md) | [Chinese](README.zh-CN.md)
 
-## 运行
+Power Fantasy Arena is a local AI board game about six original web-fiction protagonists sharing one world for ten years. Each character starts at 18, draws a different event every month, and reaches the final reckoning at 28. They may cooperate, collide, or spend a decade carefully making enemies.
 
-最简单的方式是双击 `start-game.cmd`。它会启动本地服务并打开浏览器；关闭命令窗口即可停止游戏。
+This is a game, not a group chat with character portraits. Every protagonist has values, blind spots, decision rules, memory, and a luck profile that changes the events they are likely to draw.
 
-命令行方式：
+![The Power Fantasy Arena home screen](docs/images/arena-home.png)
 
-1. 复制 `.env.example` 为 `.env.local`，填入 `DEEPSEEK_API_KEY`。
-2. 安装依赖：`npm install`
-3. 启动：`npm run dev`
-4. 打开 `http://localhost:3000`
+## How a run works
 
-密钥只由本地 API 路由读取，不会进入浏览器代码、对局档案或导出文件。`.env*` 已被 Git 忽略。开源前不要提交 `.env.local`。
+Choose two to six protagonists and a random seed. A full run lasts 120 months.
 
-## 内置设计
+- Each protagonist receives a separate monthly event.
+- DeepSeek V4 Flash chooses the character's response. One DeepSeek V4 Pro judge resolves the outcome.
+- The event library contains 30 web-fiction story patterns at four intensity levels, for 120 event variants.
+- Luck changes the odds of fortunate, hostile, and mixed events.
+- Characters may meet around month 40, meet more often after month 80, and must converge in month 120.
+- Context is reorganized every six months. Character definitions stay intact while recent history and durable memories are stored separately.
 
-- 6 名原创主角，支持 2–6 人同局；继续添加原型时不受这个数量限制。
-- 一局固定 120 个月。所有人同时刷新月份，但各自抽到的事件不同。
-- 事件池有 30 个网文母题，每个母题分成 4 档强度，共 120 种。
-- 主角光环改变好运、坏事和混合事件的抽取概率。
-- 地图记录人物坐标。第 40 个月小概率相遇，第 80 个月概率上升，第 120 个月必定会合。
-- 每 6 个月整理一次模型上下文。人物设定始终保留，最近经历和显著记忆分开管理。
-- 每局写入独立的 `runs/<run-id>/` 文件夹，里面有 Markdown 报告、完整时间线和摘要。
-- 中英文界面都经过人工化改写。中文更像桌游主持人口吻，英文采用简洁的专业游戏 UI 语气。
+![Four protagonist profiles with values, rules, and blind spots](docs/images/character-roster.png)
 
-## 决策记录边界
+## Run it locally
 
-档案保存角色公开给出的理由、引用记忆、放弃的方案、风险估计和裁判依据。隐藏思维链不请求，也不保存。
+On Windows, the quickest route is `start-game.cmd`. Double-click it to start the local server and open the game. Close the command window when you are done.
 
-## 样例
+For a terminal setup:
 
-`runs/` 中的每个文件夹都是一局。`report.md` 适合阅读和做视频，`timeline.json` 保留机器可读的全部月度记录，`summary.json` 只放最终结果与数值。
+1. Copy `.env.example` to `.env.local`.
+2. Add your DeepSeek API key to `.env.local`.
+3. Run `npm install`.
+4. Run `npm run dev`.
+5. Open `http://localhost:3000`.
 
-## 研究说明
+Node.js 22.13 or newer is required.
 
-分类依据、资料来源与模型接口核对见 `RESEARCH.md`。
+```env
+DEEPSEEK_API_KEY=your_key_here
+```
 
-## 许可
+The key is read only by the local API route. It is not sent to browser code or written into run archives. `.env.local` is ignored by Git.
 
-MIT
+![Run configuration with player count, seed, and selected protagonists](docs/images/run-setup.png)
+
+## What the game saves
+
+Each run gets its own folder under `runs/<run-id>/`:
+
+- `report.md` is the readable account, suitable for review or video planning.
+- `timeline.json` contains the complete month-by-month record.
+- `summary.json` contains the ending and final statistics.
+
+The archive records public reasons, cited memories, rejected options, risk estimates, and the judge's ruling. It does not request or store hidden chain-of-thought.
+
+## Development commands
+
+```bash
+npm run dev
+npm run build
+npm test
+npm run lint
+npm run db:generate
+```
+
+The app uses React 19, TypeScript, Vinext, Vite, Drizzle ORM, and the Cloudflare Vite plugin. See [RESEARCH.md](RESEARCH.md) for the event taxonomy, source notes, and model-interface checks.
+
+## License
+
+[MIT](LICENSE)
